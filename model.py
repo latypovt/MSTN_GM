@@ -36,7 +36,7 @@ class Remove_correlateds():
     corr_matrix = data.corr()
     corr_matrix = corr_matrix.abs()
     # Select upper triangle of correlation matrix
-    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool)) #lower half is NaN
+    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)) #lower half is NaN
     # Find features with correlation greater than 0.95
     self.to_drop = [column for column in upper.columns if any(upper[column] > self.threshold)]
     data.drop(self.to_drop, axis=1, inplace=True)
@@ -51,11 +51,14 @@ class Remove_correlateds():
 model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel="linear", C=0.1))])
 kf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
 rc = Remove_correlateds()
-x = rc.fit(gm_data).to_numpy()
+x = rc.fit(gm_data)
+gm_cols = list(x.columns)
+x = x.to_numpy()
 y = condition
 
-feature_set = []
-mean_acc = []
+features = []
+train_acc = []
+test_acc = []
 # test
 for nest_index, test_index in kf.split(x,y):
     x_nest, x_test = x[nest_index], x[test_index]
@@ -67,17 +70,28 @@ for nest_index, test_index in kf.split(x,y):
     print('Best accuracy score: %.4f' % featureselector.k_score_)
     print('Best subset (indices):', featureselector.k_feature_idx_)
     print('Number of features:', len(featureselector.k_feature_idx_))
-    feature_set.extend(list(featureselector.k_feature_idx_))
+    for i in featureselector.k_feature_idx_:
+        features.append(gm_cols[i])
     x_nest = featureselector.transform(x_nest)
     x_test = featureselector.transform(x_test)
     model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel="linear", C=0.1))])
     model.fit(x_nest, y_nest)
-    y_pred = model.predict(x_test)
-    acc = accuracy_score(y_test, y_pred)
-    print("Accuracy: %.4f" % acc)
-    mean_acc.append(acc)
-feature_set = pd.DataFrame([feature_set])
-print("Mean test accuracy: %.4f" % np.mean(mean_acc))
+    y_pred_train = model.predict(x_nest)
+    y_pred_test = model.predict(x_test)
+    acc_train = accuracy_score(y_nest, y_pred_train)
+    acc_test = accuracy_score(y_test, y_pred_test)
+    print("Train accuracy: %.4f" % acc_train)
+    print("Test accuracy: %.4f" % acc_test)
+    test_acc.append(acc_test)
+    train_acc.append(acc_train)
+feature_set = pd.DataFrame([])
+feature_set['feature'] = features
+print("Mean train accuracy: %.4f" % np.mean(train_acc))
+print("Mean test accuracy: %.4f" % np.mean(test_acc))
+feature_set = feature_set.feature.value_counts()
+feature_set = feature_set.to_frame()
+feature_set.to_csv('important_features.csv')
+
 
 #TODO
 # 1. follow main() function structure - modify this script so that it can be called from main()
