@@ -70,3 +70,4 @@ for nest_index, test_index in kf.split(x,y):
 # 1. follow main() function structure - modify this script so that it can be called from main()
 # 2. Look at argparse library to make it easier to pass arguments to the script (options - threshold, k_features, path to data, C for SVM, kernel type for SVM, etc.)
 # 3. Organize the custom classes in this file into a separate file (e.g. utils.py) and import them into this file
+#install MLxtent
