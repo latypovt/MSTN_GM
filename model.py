@@ -31,8 +31,11 @@ def main():
   condition = list(ml_dataframe["diagnosis"])
   condition = np.array(condition)
 
+
   # drop unnecessary columns
   gm_data = ml_dataframe.drop(columns=['age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_of_pain', 'side_of_pain'])
+  gm_data = gm_data[np.random.default_rng(seed=42).permutation(gm_data.columns.values)]
+
 
   # stratify
   model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C))])
@@ -40,6 +43,8 @@ def main():
   rc = Remove_correlateds(threshold=args.threshold)
   x = rc.fit(gm_data).to_numpy()
   y = condition
+  feature_set = []
+  mean_acc = []
 
   # test
   for nest_index, test_index in kf.split(x,y):
@@ -52,11 +57,22 @@ def main():
       print('Best accuracy score: %.4f' % featureselector.k_score_)
       print('Best subset (indices):', featureselector.k_feature_idx_)
       print('Number of features:', len(featureselector.k_feature_idx_))
-      print('Best subset (corresponding names):', list(featureselector.k_feature_names_))
+      feature_set.extend(list(featureselector.k_feature_idx_))
+      x_nest = featureselector.transform(x_nest)
+      x_test = featureselector.transform(x_test)
+      model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel="linear", C=0.1))])
+      model.fit(x_nest, y_nest)
+      y_pred = model.predict(x_test)
+      acc = accuracy_score(y_test, y_pred)
+      print("Accuracy: %.4f" % acc)
+      mean_acc.append(acc)
+  feature_set = pd.DataFrame([feature_set])
+  print("Mean test accuracy: %.4f" % np.mean(mean_acc))
 
 if __name__ == "__main__":
   main()
-
+  
+  
 #TODO
 # 1. follow main() function structure - modify this script so that it can be called from main()
 # 2. Look at argparse library to make it easier to pass arguments to the script (options - threshold, k_features, path to data, C for SVM, kernel type for SVM, etc.)
