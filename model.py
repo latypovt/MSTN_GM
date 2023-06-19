@@ -40,7 +40,9 @@ def main():
   model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C))])
   kf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
   rc = Remove_correlateds(threshold=args.threshold)
-  x = rc.fit(gm_data).to_numpy()
+  x = rc.fit(gm_data)
+  gm_cols = list(x.columns)
+  x = np.array(x)
   y = condition
   features = []
   train_acc = []
@@ -49,12 +51,12 @@ def main():
 
   # test
   for nest_index, test_index in kf.split(x,y):
-      x_nest, x_test = x[nest_index], x[test_index]
-      y_nest, y_test = y[nest_index], y[test_index]
-      kf2 = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
-      split = kf2.split(x_nest, y_nest)
-      featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=4, verbose=1)
-      featureselector.fit(x_nest, y_nest)
+    x_nest, x_test = x[nest_index], x[test_index]
+    y_nest, y_test = y[nest_index], y[test_index]
+    kf2 = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+    split = kf2.split(x_nest, y_nest)
+    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=4, verbose=1)
+    featureselector.fit(x_nest, y_nest)
     print('Best accuracy score: %.4f' % featureselector.k_score_)
     print('Best subset (indices):', featureselector.k_feature_idx_)
     print('Number of features:', len(featureselector.k_feature_idx_))
@@ -72,13 +74,13 @@ def main():
     print("Test accuracy: %.4f" % acc_test)
     test_acc.append(acc_test)
     train_acc.append(acc_train)
-feature_set = pd.DataFrame([])
-feature_set['feature'] = features
-print("Mean train accuracy: %.4f" % np.mean(train_acc))
-print("Mean test accuracy: %.4f" % np.mean(test_acc))
-feature_set = feature_set.feature.value_counts()
-feature_set = feature_set.to_frame()
-feature_set.to_csv('important_features.csv')
+  feature_set = pd.DataFrame([])
+  feature_set['feature'] = features
+  print("Mean train accuracy: %.4f" % np.mean(train_acc))
+  print("Mean test accuracy: %.4f" % np.mean(test_acc))
+  feature_set = feature_set.feature.value_counts()
+  feature_set = feature_set.to_frame()
+  feature_set.to_csv('important_features.csv')
 
 
 if __name__ == "__main__":
