@@ -55,7 +55,7 @@ def main():
     y_nest, y_test = y[nest_index], y[test_index]
     kf2 = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
     split = kf2.split(x_nest, y_nest)
-    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=4, verbose=1)
+    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=20, verbose=0)
     featureselector.fit(x_nest, y_nest)
     print('Best accuracy score: %.4f' % featureselector.k_score_)
     print('Best subset (indices):', featureselector.k_feature_idx_)
@@ -88,7 +88,11 @@ if __name__ == "__main__":
   
   
 #TODO
-# 1. follow main() function structure - modify this script so that it can be called from main()
-# 2. Look at argparse library to make it easier to pass arguments to the script (options - threshold, k_features, path to data, C for SVM, kernel type for SVM, etc.)
-# 3. Organize the custom classes in this file into a separate file (e.g. utils.py) and import them into this file
-#install MLxtent
+# 1. Make a new script that does tSNE visualization of the data (whole data)
+# 2. Add tqdm to the model script
+# 3. Make a jupyter notebook that does the data visualization of the important features - notebook will be used for other visualizations as well
+
+# 4. Add feature weights to the model script - save weights to a csv file for each fold
+# 5. Make a jupyter notebook that does the data visualization of the feature weights
+# 6. ROC curve for the model and confusion matrix - on the model script
+
