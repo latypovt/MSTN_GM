@@ -74,7 +74,7 @@ for nest_index, test_index in kf.split(x,y):
         features.append(gm_cols[i])
     x_nest = featureselector.transform(x_nest)
     x_test = featureselector.transform(x_test)
-    model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel="linear", C=0.1))])
+    model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel="linear", C=0.05))])
     model.fit(x_nest, y_nest)
     y_pred_train = model.predict(x_nest)
     y_pred_test = model.predict(x_test)
