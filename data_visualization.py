@@ -13,7 +13,7 @@ from sklearn.pipeline import Pipeline
 from sklearn import datasets
 import copy
 import argparse
-from utils import Remove_correlateds
+from utils.utils import Remove_correlateds
 
 
 def main(): 

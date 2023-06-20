@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 import copy
 import argparse
-from utils import Remove_correlateds
+from utils.utils import Remove_correlateds
 from tqdm import tqdm
 
 def main(): 
