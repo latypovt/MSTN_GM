@@ -4,16 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.manifold import TSNE
-from sklearn.model_selection import StratifiedKFold
-from mlxtend.feature_selection import SequentialFeatureSelector as SFS
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
-from sklearn import datasets
-import copy
 import argparse
-from utils.utils import Remove_correlateds
+
 
 
 def main(): 

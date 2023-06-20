@@ -93,11 +93,8 @@ if __name__ == "__main__":
   main()  
   
 #TODO
-# 1. Make a new script that does tSNE visualization of the data (whole data)
-# 2. Add tqdm to the model script: one progress bar for each fold (n_folds; default=10)
-# 3. Make a jupyter notebook that does the data visualization of the important features - notebook will be used for other visualizations as well
-
-# 4. Add feature weights to the model script - save weights to a csv file for each fold
-# 5. Make a jupyter notebook that does the data visualization of the feature weights
-# 6. ROC curve for the model and confusion matrix - on the model script
+# 0. Figuring out what is going on with tsne 
+# 1. Add feature weights to the model script - save weights to a csv file for each fold
+# 2. Make a jupyter notebook that does the data visualization of the feature weights
+# 3. ROC curve for the model and confusion matrix - on the model script
 
