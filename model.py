@@ -11,6 +11,7 @@ from sklearn.pipeline import Pipeline
 import copy
 import argparse
 from utils import Remove_correlateds
+from tqdm import tqdm
 
 def main(): 
   #parse arguments
@@ -20,6 +21,7 @@ def main():
   parser.add_argument("--path_to_data", type=str, default="stats/ml_dataframe.csv")
   parser.add_argument("--kernel", type=str, default="linear")
   parser.add_argument("--C", type=float, default=0.1)
+  parser.add_argument("--n_splits", type=int, default=10)
   args = parser.parse_args()
   
   # create dataframes
@@ -48,48 +50,51 @@ def main():
   train_acc = []
   test_acc = []
 
-
   # test
-  for nest_index, test_index in kf.split(x,y):
+  progress_bar = tqdm(kf.split(x, y), desc='Progress', total = kf.get_n_splits(x, y))
+  for nest_index, test_index in progress_bar:
     x_nest, x_test = x[nest_index], x[test_index]
     y_nest, y_test = y[nest_index], y[test_index]
-    kf2 = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+    kf2 = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
     split = kf2.split(x_nest, y_nest)
-    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=20, verbose=0)
+    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=4, verbose=0)
     featureselector.fit(x_nest, y_nest)
-    print('Best accuracy score: %.4f' % featureselector.k_score_)
-    print('Best subset (indices):', featureselector.k_feature_idx_)
-    print('Number of features:', len(featureselector.k_feature_idx_))
+    #print('Best accuracy score: %.4f' % featureselector.k_score_)
+    #print('Best subset (indices):', featureselector.k_feature_idx_)
+    #print('Number of features:', len(featureselector.k_feature_idx_))
     for i in featureselector.k_feature_idx_:
         features.append(gm_cols[i])
     x_nest = featureselector.transform(x_nest)
     x_test = featureselector.transform(x_test)
-    model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel="linear", C=0.05))])
+    model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C))])
     model.fit(x_nest, y_nest)
     y_pred_train = model.predict(x_nest)
     y_pred_test = model.predict(x_test)
     acc_train = accuracy_score(y_nest, y_pred_train)
     acc_test = accuracy_score(y_test, y_pred_test)
-    print("Train accuracy: %.4f" % acc_train)
-    print("Test accuracy: %.4f" % acc_test)
+    #print("Train accuracy: %.4f" % acc_train)
+    #print("Test accuracy: %.4f" % acc_test)
     test_acc.append(acc_test)
     train_acc.append(acc_train)
+
+    progress_bar.set_postfix({'Train': acc_train, 'Test': acc_test})
+
   feature_set = pd.DataFrame([])
   feature_set['feature'] = features
+  # overall results
   print("Mean train accuracy: %.4f" % np.mean(train_acc))
   print("Mean test accuracy: %.4f" % np.mean(test_acc))
   feature_set = feature_set.feature.value_counts()
   feature_set = feature_set.to_frame()
-  feature_set.to_csv('important_features.csv')
+  feature_set.to_csv('out/important_features.csv')
 
 
 if __name__ == "__main__":
-  main()
-  
+  main()  
   
 #TODO
 # 1. Make a new script that does tSNE visualization of the data (whole data)
-# 2. Add tqdm to the model script
+# 2. Add tqdm to the model script: one progress bar for each fold (n_folds; default=10)
 # 3. Make a jupyter notebook that does the data visualization of the important features - notebook will be used for other visualizations as well
 
 # 4. Add feature weights to the model script - save weights to a csv file for each fold
