@@ -11,7 +11,7 @@ from sklearn.pipeline import Pipeline
 import copy
 import argparse
 from utils.utils import Remove_correlateds
-from utils.utils import plot_confusion_matrix as plot_cm
+from utils import confusion_matrix as plot_cm
 from tqdm import tqdm
 
 def main(): 
@@ -40,7 +40,7 @@ def main():
 
 
   # stratify
-  model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
+  
   kf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
   rc = Remove_correlateds(threshold=args.threshold)
   x = rc.fit(gm_data)
@@ -54,30 +54,28 @@ def main():
   y_true = None
   model_pred = None
 
+
   # test
-  progress_bar = tqdm(enumerate(kf.split(x, y)), desc='Progress', total = kf.get_n_splits(x, y))
+  progress_bar = tqdm(enumerate(kf.split(x, y)), desc='Progress', total = kf.get_n_splits(x, y), ascii=" ▖▘▝▗▚▞█", colour="#42cbf5")
   for fold, (nest_index, test_index) in progress_bar:
     x_nest, x_test = x[nest_index], x[test_index]
     y_nest, y_test = y[nest_index], y[test_index]
     kf2 = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
     split = kf2.split(x_nest, y_nest)
-    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=4, verbose=0)
+    model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
+    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=20, verbose=0)
     featureselector.fit(x_nest, y_nest)
-    #print('Best accuracy score: %.4f' % featureselector.k_score_)
-    #print('Best subset (indices):', featureselector.k_feature_idx_)
-    #print('Number of features:', len(featureselector.k_feature_idx_))
     fold_features = []
     for i in featureselector.k_feature_idx_:
         features.append(gm_cols[i])
         fold_features.append(gm_cols[i])
     x_nest = featureselector.transform(x_nest)
     x_test = featureselector.transform(x_test)
-    model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
-    model.fit(x_nest, y_nest)
-    model_feature_weights = model['svm'].coef_
-
-    y_pred_train = model.predict(x_nest)
-    y_pred_test = model.predict(x_test)
+    final_model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
+    final_model.fit(x_nest, y_nest)
+    model_feature_weights = final_model['svm'].coef_
+    y_pred_train = final_model.predict(x_nest)
+    y_pred_test = final_model.predict(x_test)
     acc_train = accuracy_score(y_nest, y_pred_train)
     acc_test = accuracy_score(y_test, y_pred_test)
     test_acc.append(acc_test)
@@ -85,16 +83,16 @@ def main():
    
    # confusion matrix
     if model_proba is None:
-        model_proba = model.predict_proba(x_test)
+        model_proba = final_model.predict_proba(x_test)
         y_true = y_test
         model_pred = y_pred_test
     else:
-        model_proba = np.append(model_proba, model.predict_proba(x_test), axis=0)
+        model_proba = np.append(model_proba, final_model.predict_proba(x_test), axis=0)
         y_true = np.append(y_true, y_test, axis=0)
         model_pred = np.append(model_pred, y_pred_test, axis=0)
 
     #progress bar
-    progress_bar.set_postfix({'Train': acc_train, 'Test': acc_test})
+    progress_bar.set_postfix({'Train': np.mean(train_acc), 'Test': np.mean(test_acc)})
 
     # save fold_features as csv
     feature_weights = pd.DataFrame(model_feature_weights, columns=fold_features)
@@ -112,8 +110,8 @@ def main():
 
   # save model probe
   cm = plot_cm.confusion_matrix(y_true, model_pred, normalize='true')
-  plot_cm.plot_confusion_matrix(cm, class_names=['MS', 'MS-TN'], savefig='cm2.png')
-  plot_cm.plot_roc_auc(y_true, model_pred, model_proba, class_names=['MS', 'MS-TN'], colors=['#B1C8E7', '#E6BA97'], savefig='roc2.png')
+  plot_cm.plot_confusion_matrix(cm, class_names=['MS', 'MS-TN'], savefig='out/cm.png')
+  plot_cm.plot_roc_auc(y_true, model_proba, class_names=['MS', 'MS-TN'], colors=['#B1C8E7', '#E6BA97'], savefig='out/roc.png')
 
 if __name__ == "__main__":
   main()  

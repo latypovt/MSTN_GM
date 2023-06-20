@@ -16,15 +16,15 @@ def plot_confusion_matrix(conf_matrix, class_names, savefig = 'confusion_matrix.
     ax = sns.heatmap(conf_matrix, annot=True, cmap="Blues")
 
     # set x-axis label and ticks. 
-    ax.set_xlabel("Predicted duration", fontsize=14, labelpad=20)
+    ax.set_xlabel("Predicted value", fontsize=14, labelpad=20)
     ax.xaxis.set_ticklabels(class_names, rotation=45)
 
     # set y-axis label and ticks
-    ax.set_ylabel("Actual duration", fontsize=14, labelpad=20)
+    ax.set_ylabel("Actual value", fontsize=14, labelpad=20)
     ax.yaxis.set_ticklabels(class_names,rotation=45)
 
     # set plot title
-    ax.set_title("Confusion Matrix for the TN Response Model", fontsize=14, pad=20)
+    ax.set_title("Confusion Matrix", fontsize=14, pad=20)
     if savefig:
         plt.savefig(savefig, dpi=300, bbox_inches='tight')
 
@@ -97,40 +97,28 @@ def get_all_roc_coordinates(y_real, y_proba):
 
 
 # create a function to calculate the AUC for one-vs-rest classification and plot it using seaborn
-def plot_roc_auc(y_test, y_pred, y_proba, class_names, colors, savefig = 'roc.png'):
-    # convert the test labels from integers to dummy variables (i.e. one hot encoded)
-    label_binarizer = LabelBinarizer()
-    y_oh_test = label_binarizer.fit_transform(y_test)
-    
+def plot_roc_auc(y_test, y_proba, class_names, colors, savefig = 'roc.png'):
+
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
-    # plot the ROC curve for each label
-    for i in range(len(class_names)):
-    # Gets the class
-        fpr[i], tpr[i], _ = roc_curve(y_oh_test[:,i], y_proba[:,i], drop_intermediate=False)
-        roc_auc[i] = auc(fpr[i], tpr[i])
+
+
+    fpr['macro'], tpr['macro'], _ = roc_curve(y_test, y_proba[:,1], drop_intermediate=False)
+    roc_auc['macro'] = auc(fpr['macro'], tpr['macro'])
     
     # compute micro-average ROC curve and ROC area
     
     fpr_grid = np.linspace(0.0, 1.0, 1000)
-
-    # Interpolate all ROC curves at these points
     mean_tpr = np.zeros_like(fpr_grid)
+    mean_tpr += np.interp(fpr_grid, fpr['macro'], tpr['macro'])
 
-    for i in range(len(class_names)):
-        mean_tpr += np.interp(fpr_grid, fpr[i], tpr[i])  # linear interpolation
-
-    # Average it and compute AUC
-    mean_tpr /= len(class_names)
 
     fpr["micro"] = fpr_grid
     tpr["micro"] = mean_tpr
+
     roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
-    ax, fig = plt.subplots(figsize=(10,8))
-    for i in range(len(class_names)):
-        sns.lineplot(x=fpr[i], y=tpr[i], label='ROC curve of class {0} (area = {1:0.2f})'
-                    ''.format(class_names[i], roc_auc[i]), estimator=None, color=colors[i], linestyle='-', linewidth=2, alpha=0.8)
+    plt.subplots(figsize=(10,8))
 
     sns.lineplot(x=[0, 1], y=[0, 1], color='grey', lw=2, linestyle='--', alpha=0.6)
     plt.xlim([-0.02, 1.02])
@@ -142,9 +130,10 @@ def plot_roc_auc(y_test, y_pred, y_proba, class_names, colors, savefig = 'roc.pn
     #plot micro-average ROC curve and ROC area
     sns.lineplot(x=fpr["micro"], y=tpr["micro"], label='Average ROC curve (area = {0:0.2f})'
                     ''.format(roc_auc["micro"]), color='navy', linestyle='-', linewidth=2, alpha=0.7)
+    sns.lineplot(x=0, y=tpr["macro"][0], label='Macro-average ROC curve (area = {0:0.2f})')
     if savefig:
         plt.savefig(savefig, dpi=300, bbox_inches='tight')
-        
+
 
 
 
