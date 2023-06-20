@@ -49,10 +49,11 @@ def main():
   features = []
   train_acc = []
   test_acc = []
+  model_probe = None
 
   # test
-  progress_bar = tqdm(kf.split(x, y), desc='Progress', total = kf.get_n_splits(x, y))
-  for nest_index, test_index in progress_bar:
+  progress_bar = tqdm(enumerate(kf.split(x, y)), desc='Progress', total = kf.get_n_splits(x, y))
+  for fold, (nest_index, test_index) in progress_bar:
     x_nest, x_test = x[nest_index], x[test_index]
     y_nest, y_test = y[nest_index], y[test_index]
     kf2 = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
@@ -62,22 +63,33 @@ def main():
     #print('Best accuracy score: %.4f' % featureselector.k_score_)
     #print('Best subset (indices):', featureselector.k_feature_idx_)
     #print('Number of features:', len(featureselector.k_feature_idx_))
+    fold_features = []
     for i in featureselector.k_feature_idx_:
         features.append(gm_cols[i])
+        fold_features.append(gm_cols[i])
     x_nest = featureselector.transform(x_nest)
     x_test = featureselector.transform(x_test)
     model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C))])
     model.fit(x_nest, y_nest)
+    model_feature_weights = model['svm'].coef_
+
     y_pred_train = model.predict(x_nest)
     y_pred_test = model.predict(x_test)
     acc_train = accuracy_score(y_nest, y_pred_train)
     acc_test = accuracy_score(y_test, y_pred_test)
-    #print("Train accuracy: %.4f" % acc_train)
-    #print("Test accuracy: %.4f" % acc_test)
     test_acc.append(acc_test)
     train_acc.append(acc_train)
+    # confusion matrix
+    if model_probe is None:
+        model_probe = model.predict_proba(x_test)
+    else:
+        model_probe = np.append(model_probe, model.predict_proba(x_test), axis=0)
 
     progress_bar.set_postfix({'Train': acc_train, 'Test': acc_test})
+
+    # save fold_features as csv
+    feature_weights = pd.DataFrame(model_feature_weights, columns=fold_features)
+    feature_weights.to_csv('out/{}_feature_weights.csv'.format(fold))
 
   feature_set = pd.DataFrame([])
   feature_set['feature'] = features
@@ -95,6 +107,7 @@ if __name__ == "__main__":
 #TODO
 # 0. Figuring out what is going on with tsne 
 # 1. Add feature weights to the model script - save weights to a csv file for each fold
+
 # 2. Make a jupyter notebook that does the data visualization of the feature weights
 # 3. ROC curve for the model and confusion matrix - on the model script
 
