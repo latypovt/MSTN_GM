@@ -44,6 +44,7 @@ def plot_auc(fpr, tpr, roc_auc, class_names, savefig = 'roc.png'):
     plt.legend(loc="lower right")
     if savefig:
         plt.savefig(savefig, dpi=300, bbox_inches='tight')
+    plt.close()
 
 def calculate_tpr_fpr(y_real, y_pred):
     '''
@@ -118,19 +119,25 @@ def plot_roc_auc(y_test, y_proba, class_names, colors, savefig = 'roc.png'):
     tpr["micro"] = mean_tpr
 
     roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
-    plt.subplots(figsize=(10,8))
+    fig, ax = plt.subplots(figsize=(10, 10))
+    sns.axes_style("white")
+    ax = sns.lineplot(x=[0, 1], y=[0, 1], color='grey', lw=2, linestyle='--', alpha=0.6, zorder = 2)
+    ax.set_xlim([-0.02, 1.02])
+    ax.set_ylim([-0.02, 1.02])
+    ax.set_xlabel('False Positive Rate')
+    ax.set_ylabel('True Positive Rate')
+    ax.set_title('Receiver operating characteristic')
+    #add 0 to the beginning of the micro arrays to make the plot start at (0,0)
+    fpr['micro'] = np.insert(fpr['micro'], 0, 0)
+    tpr['micro'] = np.insert(tpr['micro'], 0, 0)
+    print(fpr['micro'])
+    print(tpr['micro'])
+           
 
-    sns.lineplot(x=[0, 1], y=[0, 1], color='grey', lw=2, linestyle='--', alpha=0.6)
-    plt.xlim([-0.02, 1.02])
-    plt.ylim([-0.02, 1.02])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic')
-    plt.legend(loc="lower right")
-    #plot micro-average ROC curve and ROC area
-    sns.lineplot(x=fpr["micro"], y=tpr["micro"], label='Average ROC curve (area = {0:0.2f})'
-                    ''.format(roc_auc["micro"]), color='navy', linestyle='-', linewidth=2, alpha=0.7)
-    sns.lineplot(x=0, y=tpr["macro"][0], label='Macro-average ROC curve (area = {0:0.2f})')
+    ax = sns.lineplot(x=fpr["micro"], y=tpr["micro"], label='Average ROC curve (area = {0:0.2f})'
+                    ''.format(roc_auc["micro"]), color='navy', linestyle='-', linewidth=2, alpha=0.7, zorder = 1)
+    #make sure the plot goes from (0,0) to (1,1)
+
     if savefig:
         plt.savefig(savefig, dpi=300, bbox_inches='tight')
 
