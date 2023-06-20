@@ -11,6 +11,7 @@ from sklearn.pipeline import Pipeline
 import copy
 import argparse
 from utils.utils import Remove_correlateds
+from utils.utils import plot_confusion_matrix as plot_cm
 from tqdm import tqdm
 
 def main(): 
@@ -39,7 +40,7 @@ def main():
 
 
   # stratify
-  model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C))])
+  model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
   kf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
   rc = Remove_correlateds(threshold=args.threshold)
   x = rc.fit(gm_data)
@@ -49,10 +50,13 @@ def main():
   features = []
   train_acc = []
   test_acc = []
+  model_proba = None
+  y_true = None
+  model_pred = None
 
   # test
-  progress_bar = tqdm(kf.split(x, y), desc='Progress', total = kf.get_n_splits(x, y))
-  for nest_index, test_index in progress_bar:
+  progress_bar = tqdm(enumerate(kf.split(x, y)), desc='Progress', total = kf.get_n_splits(x, y))
+  for fold, (nest_index, test_index) in progress_bar:
     x_nest, x_test = x[nest_index], x[test_index]
     y_nest, y_test = y[nest_index], y[test_index]
     kf2 = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
@@ -62,25 +66,43 @@ def main():
     #print('Best accuracy score: %.4f' % featureselector.k_score_)
     #print('Best subset (indices):', featureselector.k_feature_idx_)
     #print('Number of features:', len(featureselector.k_feature_idx_))
+    fold_features = []
     for i in featureselector.k_feature_idx_:
         features.append(gm_cols[i])
+        fold_features.append(gm_cols[i])
     x_nest = featureselector.transform(x_nest)
     x_test = featureselector.transform(x_test)
-    model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C))])
+    model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
     model.fit(x_nest, y_nest)
+    model_feature_weights = model['svm'].coef_
+
     y_pred_train = model.predict(x_nest)
     y_pred_test = model.predict(x_test)
     acc_train = accuracy_score(y_nest, y_pred_train)
     acc_test = accuracy_score(y_test, y_pred_test)
-    #print("Train accuracy: %.4f" % acc_train)
-    #print("Test accuracy: %.4f" % acc_test)
     test_acc.append(acc_test)
     train_acc.append(acc_train)
+   
+   # confusion matrix
+    if model_proba is None:
+        model_proba = model.predict_proba(x_test)
+        y_true = y_test
+        model_pred = y_pred_test
+    else:
+        model_proba = np.append(model_proba, model.predict_proba(x_test), axis=0)
+        y_true = np.append(y_true, y_test, axis=0)
+        model_pred = np.append(model_pred, y_pred_test, axis=0)
 
+    #progress bar
     progress_bar.set_postfix({'Train': acc_train, 'Test': acc_test})
+
+    # save fold_features as csv
+    feature_weights = pd.DataFrame(model_feature_weights, columns=fold_features)
+    feature_weights.to_csv('out/{}_feature_weights.csv'.format(fold))
 
   feature_set = pd.DataFrame([])
   feature_set['feature'] = features
+
   # overall results
   print("Mean train accuracy: %.4f" % np.mean(train_acc))
   print("Mean test accuracy: %.4f" % np.mean(test_acc))
@@ -88,6 +110,10 @@ def main():
   feature_set = feature_set.to_frame()
   feature_set.to_csv('out/important_features.csv')
 
+  # save model probe
+  cm = plot_cm.confusion_matrix(y_true, model_pred, normalize='true')
+  plot_cm.plot_confusion_matrix(cm, class_names=['MS', 'MS-TN'], savefig='cm2.png')
+  plot_cm.plot_roc_auc(y_true, model_pred, model_proba, class_names=['MS', 'MS-TN'], colors=['#B1C8E7', '#E6BA97'], savefig='roc2.png')
 
 if __name__ == "__main__":
   main()  
@@ -95,6 +121,7 @@ if __name__ == "__main__":
 #TODO
 # 0. Figuring out what is going on with tsne 
 # 1. Add feature weights to the model script - save weights to a csv file for each fold
+
 # 2. Make a jupyter notebook that does the data visualization of the feature weights
 # 3. ROC curve for the model and confusion matrix - on the model script
 
