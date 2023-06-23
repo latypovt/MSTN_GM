@@ -116,10 +116,4 @@ def main():
 if __name__ == "__main__":
   main()  
   
-#TODO
-# 0. Figuring out what is going on with tsne 
-# 1. Add feature weights to the model script - save weights to a csv file for each fold
-
-# 2. Make a jupyter notebook that does the data visualization of the feature weights
-# 3. ROC curve for the model and confusion matrix - on the model script
 
