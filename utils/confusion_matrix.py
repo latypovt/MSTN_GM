@@ -130,8 +130,7 @@ def plot_roc_auc(y_test, y_proba, class_names, colors, savefig = 'roc.png'):
     #add 0 to the beginning of the micro arrays to make the plot start at (0,0)
     fpr['micro'] = np.insert(fpr['micro'], 0, 0)
     tpr['micro'] = np.insert(tpr['micro'], 0, 0)
-    print(fpr['micro'])
-    print(tpr['micro'])
+
            
 
     ax = sns.lineplot(x=fpr["micro"], y=tpr["micro"], label='Average ROC curve (area = {0:0.2f})'
