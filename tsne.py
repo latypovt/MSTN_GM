@@ -30,13 +30,13 @@ def main():
     #condition = np.array(condition)
 
     # drop unnecessary columns
-    gm_data = ml_dataframe.drop(columns=['id', 'age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_categories', 'duration_of_pain', 'side_of_pain'])
-    gm_data = gm_data[np.random.default_rng(seed=42).permutation(gm_data.columns.values)]
+    morphological_data = ml_dataframe.drop(columns=['id', 'age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_categories', 'duration_of_pain', 'side_of_pain'])
+    morphological_data = morphological_data[np.random.default_rng(seed=42).permutation(morphological_data.columns.values)]
 
     # configure tsne model
     print("initializing...")
     tsne = TSNE(n_components=2, perplexity=5, random_state=42)
-    tsne_data = tsne.fit_transform(gm_data)
+    tsne_data = tsne.fit_transform(morphological_data)
 
     # create dataframe
     tsne_data = np.vstack((tsne_data.T, ml_dataframe["duration_categories"])).T
