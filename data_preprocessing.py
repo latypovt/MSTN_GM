@@ -66,7 +66,7 @@ for feature in gm_features:
     gm_data[feature] = (gm_data[feature])*1000 / gm_data['eTIV']
 
 for feature in subcortical_features:
-    subcortical_data[feature] = subcortical_data[feature] / subcortical_data['id'].map(eTIV_dict)
+    subcortical_data[feature] = (subcortical_data[feature])*1000 / subcortical_data['id'].map(eTIV_dict)
 
 # create and save final dataframe
 ml_dataframe = pd.merge(ms_studies, gm_data, on='id')
