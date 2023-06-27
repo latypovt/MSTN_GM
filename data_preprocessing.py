@@ -71,6 +71,6 @@ for feature in subcortical_features:
 # create and save final dataframe
 ml_dataframe = pd.merge(ms_studies, gm_data, on='id')
 print(ml_dataframe.shape)
-ml_dataframe = pd.merge(ml_dataframe, subcortical_data, on='id', how='outer')
+ml_dataframe = pd.merge(ml_dataframe, subcortical_data, on='id')
 print(ml_dataframe.shape)
 ml_dataframe.to_csv('stats/ml_dataframe.csv', index=False)
