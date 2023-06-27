@@ -35,7 +35,7 @@ def main():
   condition = np.array(condition)
 
   # drop unnecessary columns
-  gm_data = ml_dataframe.drop(columns=['age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_of_pain', 'side_of_pain'])
+  gm_data = ml_dataframe.drop(columns=['age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_of_pain', 'side_of_pain', 'edss'])
   gm_data = gm_data[np.random.default_rng(seed=42).permutation(gm_data.columns.values)]
 
 
