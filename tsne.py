@@ -30,7 +30,7 @@ def main():
     #condition = np.array(condition)
 
     # drop unnecessary columns
-    morphological_data = ml_dataframe.drop(columns=['id', 'age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_categories', 'duration_of_pain', 'side_of_pain'])
+    morphological_data = ml_dataframe.drop(columns=['id', 'age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_categories', 'duration_of_pain', 'side_of_pain','edss'])
     morphological_data = morphological_data[np.random.default_rng(seed=42).permutation(morphological_data.columns.values)]
 
     # configure tsne model
@@ -39,7 +39,7 @@ def main():
     tsne_data = tsne.fit_transform(morphological_data)
 
     # create dataframe
-    tsne_data = np.vstack((tsne_data.T, ml_dataframe["duration_categories"])).T
+    tsne_data = np.vstack((tsne_data.T, ml_dataframe["edss"])).T
     tsne_df = pd.DataFrame(data=tsne_data, columns=("Dim_1", "Dim_2", "diagnosis"))
 
     # plot
@@ -49,8 +49,6 @@ def main():
       for i, subject in enumerate (ml_dataframe["id"]):
           plt.annotate(subject, (tsne_data[i,0]+0.08, tsne_data[i,1]+0.08), fontsize=6)
       plt.savefig('out/tsne.png', dpi=300)
-
-
 
 
  
