@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.manifold import TSNE
 import argparse
-
+import matplotlib.font_manager
 
 
 def main(): 
@@ -42,10 +42,13 @@ def main():
     tsne_data = np.vstack((tsne_data.T, ml_dataframe["edss"])).T
     tsne_df = pd.DataFrame(data=tsne_data, columns=("Dim_1", "Dim_2", "diagnosis"))
 
+    
+    matplotlib.font_manager.findfont('humor sans')
+
     # plot
     with plt.xkcd():
       plt.figure(figsize=(10,10))
-      sns.scatterplot(tsne_df, x="Dim_1", y="Dim_2", hue='diagnosis', alpha=0.8)
+      sns.scatterplot(tsne_df, x="Dim_1", y="Dim_2", hue='diagnosis', sizes = 5, alpha=0.8)
       for i, subject in enumerate (ml_dataframe["id"]):
           plt.annotate(subject, (tsne_data[i,0]+0.08, tsne_data[i,1]+0.08), fontsize=6)
       plt.savefig('out/tsne.png', dpi=300)
