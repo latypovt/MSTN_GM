@@ -1,14 +1,12 @@
 # import libraries
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt 
 from sklearn.model_selection import StratifiedKFold
 from mlxtend.feature_selection import SequentialFeatureSelector as SFS
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
-import copy
 import argparse
 from utils.utils import Remove_correlateds
 from utils import confusion_matrix as plot_cm

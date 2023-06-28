@@ -15,7 +15,7 @@ Mean test accuracy 90.2%
 # TO DO - this week
 
 
-1) tSNE - same story - EDSS (need to add EDSS to the demographics dataframe, run data preprocessing and do tsne vis.)
+1) tSNE - same story - EDSS (need to add EDSS to the demographics dataframe, run data preprocessing and do tsne vis.) - EDSS - step, duration of MS, pain/no pain, age, sex
 2) Slides with intro, objectives, methods (description of everything - model, sfs, nested CV, how it works etc.), results, figures, interpretation
 3) Important predictors - a short (1-2 pages) review on all structures, how previous research in chronic pain/MS shown these regions being affected. Check lab papers as well
 4) Start writing documentation in this file - use Markdown (guide: https://www.markdownguide.org/basic-syntax/)

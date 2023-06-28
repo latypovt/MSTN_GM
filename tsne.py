@@ -40,6 +40,8 @@ def main():
 
     # create dataframe
     tsne_data = np.vstack((tsne_data.T, ml_dataframe["edss"])).T
+#add edss, age, sex, duration of MS binned
+
     tsne_df = pd.DataFrame(data=tsne_data, columns=("Dim_1", "Dim_2", "diagnosis"))
 
     
@@ -52,6 +54,11 @@ def main():
       for i, subject in enumerate (ml_dataframe["id"]):
           plt.annotate(subject, (tsne_data[i,0]+0.08, tsne_data[i,1]+0.08), fontsize=6)
       plt.savefig('out/tsne.png', dpi=300)
+
+    with plt.xkcd():
+       fig, ax = plt.subplots(2,2 , figsize=(10,10))
+        sns.scatterplot(ax=ax[0,0], data=tsne_df, x="Dim_1", y="Dim_2", hue='diagnosis', sizes = 5, alpha=0.8)
+        sns.scatterplot(ax=ax[0,1], data=tsne_df, x="Dim_1", y="Dim_2", hue='diagnosis', sizes = 5, alpha=0.8)
 
 
  
