@@ -39,7 +39,7 @@ def main():
 
   # stratify
   
-  kf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+  kf = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
   rc = Remove_correlateds(threshold=args.threshold)
   x = rc.fit(gm_data)
   gm_cols = list(x.columns)
