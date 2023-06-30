@@ -20,6 +20,7 @@ Abigail Wolfensohn, Timur Latypov, [Hodaie Lab](https://www.hodaielab.com/)
 ## 📌 Latest results:
     Mean train accuracy 99.6%  
     Mean test accuracy 90.2%
+![feature_weights](https://github.com/latypovt/MSTN_GM/assets/119353990/0a690b00-9fd6-4321-838a-afceffabd4bd.png)
 
 ***
 ## 📅 TO DO - this week
