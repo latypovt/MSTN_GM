@@ -36,7 +36,7 @@ def main():
 
     # configure tsne model
     print("initializing...")
-    tsne = TSNE(n_components=2, perplexity=5, random_state=42)
+    tsne = TSNE(n_components=2, perplexity=6, random_state=42)
     tsne_data = tsne.fit_transform(morphological_data)
 
     # create dataframe

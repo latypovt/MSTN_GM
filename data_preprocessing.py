@@ -31,6 +31,8 @@ rh_thal = pd.read_csv('stats/rh_thal.csv')
 rh_thal = rh_thal.add_prefix('rh_')
 rh_thal = rh_thal.rename(columns={'rh_Measure:volume': 'id'})
 
+print(rh_area.columns[0])
+
 # drop unnecessary columns
 rh_area = rh_area.drop(columns=['BrainSegVolNotVent', 'eTIV'])
 lh_area = lh_area.drop(columns=['BrainSegVolNotVent', 'eTIV'])
@@ -68,9 +70,15 @@ for feature in gm_features:
 for feature in subcortical_features:
     subcortical_data[feature] = (subcortical_data[feature])*1000 / subcortical_data['id'].map(eTIV_dict)
 
+for column in gm_data.columns:
+    # replace '_and_' with '&'
+    gm_data = gm_data.rename(columns={column: column.replace('_and_', '&')})
+gm_data = gm_data.groupby(level=0, axis=1).sum()
+gm_data = gm_data.dropna(axis=1)
+
 # create and save final dataframe
-ml_dataframe = pd.merge(ms_studies, gm_data, on='id')
+ml_dataframe = pd.merge(ms_studies, gm_data, on='id', how='outer')
 print(ml_dataframe.shape)
-ml_dataframe = pd.merge(ml_dataframe, subcortical_data, on='id')
+ml_dataframe = pd.merge(ml_dataframe, subcortical_data, on='id', how='outer')
 print(ml_dataframe.shape)
 ml_dataframe.to_csv('stats/ml_dataframe.csv', index=False)
