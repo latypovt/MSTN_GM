@@ -70,6 +70,7 @@ for feature in gm_features:
 for feature in subcortical_features:
     subcortical_data[feature] = (subcortical_data[feature])*1000 / subcortical_data['id'].map(eTIV_dict)
 
+# merge matching columns with different names
 for column in gm_data.columns:
     # replace '_and_' with '&'
     gm_data = gm_data.rename(columns={column: column.replace('_and_', '&')})
@@ -81,4 +82,5 @@ ml_dataframe = pd.merge(ms_studies, gm_data, on='id', how='outer')
 print(ml_dataframe.shape)
 ml_dataframe = pd.merge(ml_dataframe, subcortical_data, on='id', how='outer')
 print(ml_dataframe.shape)
+ml_dataframe = ml_dataframe.drop(columns=["rh_WhiteSurfArea_area", "lh_WhiteSurfArea_area", "lh_fimbria", "rh_fimbria"])
 ml_dataframe.to_csv('stats/ml_dataframe.csv', index=False)

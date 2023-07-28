@@ -27,12 +27,16 @@ def main():
   ml_dataframe = pd.read_csv(args.path_to_data)
   ml_dataframe = ml_dataframe.drop(columns=['id', 'eTIV'])
   ml_dataframe['diagnosis'] = [1 if dx =="MS-TN" else 0 for dx in ml_dataframe['diagnosis']]
+  print(ml_dataframe.shape)
+  # drop subjects with missing data
+  ml_dataframe = ml_dataframe.dropna(axis=0)
+  print(ml_dataframe.shape)
 
   # set condition
   condition = list(ml_dataframe["diagnosis"])
   condition = np.array(condition)
 
-  # drop unnecessary columns
+  # drop unnecessary columns, prepare data for stratification
   gm_data = ml_dataframe.drop(columns=['age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_of_pain', 'side_of_pain', 'edss'])
   gm_data = gm_data[np.random.default_rng(seed=42).permutation(gm_data.columns.values)]
 
@@ -61,7 +65,7 @@ def main():
     kf2 = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
     split = kf2.split(x_nest, y_nest)
     model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
-    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=20, verbose=0)
+    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=7, verbose=0)
     featureselector.fit(x_nest, y_nest)
     fold_features = []
     for i in featureselector.k_feature_idx_:
