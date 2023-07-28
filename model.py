@@ -65,7 +65,7 @@ def main():
     kf2 = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
     split = kf2.split(x_nest, y_nest)
     model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
-    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=7, verbose=0)
+    featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=20, verbose=0)
     featureselector.fit(x_nest, y_nest)
     fold_features = []
     for i in featureselector.k_feature_idx_:
