@@ -296,6 +296,7 @@
 "lh_S_temporal_transverse_area":"L TrTS",
 "lh_LGN": "L LGN V",
 "lh_MV(Re)": "L MVRe V",
+"lh_AV": "L AV V",
 "lh_VA": "L VA V",
 "lh_VAmc": "L VAmc V",
 "lh_VLa": "L VLa V",
@@ -312,11 +313,14 @@
 "lh_Caudate": "L CN V",
 "rh_Caudate": "R CN V",
 "lh_PuI": "L PuI V",
-"rh_PuL": "R PuI V",
+"lh_PuL": "L PuL V",
+"rh_PuL": "R PuL V",
 "lh_VPL": "L VPL V",
+"lh_CA3-body": "L CA3 Body V",
 "rh_CA3-body": "R CA3 Body V",
 "lh_fimbria": "L Fimbria V",
-"rh_L-Sg": "L Sg V (Limitans)",
+"lh_L-Sg": "L L-Sg V (Limitans)",
+"rh_L-Sg": "R L-Sg V (Limitans)",
 "rh_Pf": "R Pf V",
 "rh_CA3-head": "R CA3 Head V",
 "lh_HATA": "L HATA V",
@@ -340,4 +344,6 @@
 "rh_WhiteSurfArea_area": "R WSA A",
 "lh_Hippocampal_tail": "L HP Tail V",
 "lh_Whole_hippocampus": "L Whole Hipp V",
-"rh_Whole_hippocampus": "R Whole Hipp V"}
+"rh_Whole_hippocampus": "R Whole Hipp V",
+"lh_Corticoamygdaloid-transitio": "L Cor AmT V"
+}
