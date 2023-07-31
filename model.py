@@ -15,7 +15,7 @@ from tqdm import tqdm
 def main(): 
   #parse arguments
   parser = argparse.ArgumentParser()
-  parser.add_argument("--threshold", type=float, default=0.9)
+  parser.add_argument("--threshold", type=float, default=0.95)
   parser.add_argument("--k_features", type=str, default="parsimonious")
   parser.add_argument("--path_to_data", type=str, default="stats/ml_dataframe.csv")
   parser.add_argument("--kernel", type=str, default="linear")
