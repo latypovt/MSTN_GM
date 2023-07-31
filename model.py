@@ -15,12 +15,12 @@ from tqdm import tqdm
 def main(): 
   #parse arguments
   parser = argparse.ArgumentParser()
-  parser.add_argument("--threshold", type=float, default=0.95)
+  parser.add_argument("--threshold", type=float, default=0.9)
   parser.add_argument("--k_features", type=str, default="parsimonious")
   parser.add_argument("--path_to_data", type=str, default="stats/ml_dataframe.csv")
   parser.add_argument("--kernel", type=str, default="linear")
-  parser.add_argument("--C", type=float, default=0.1)
-  parser.add_argument("--n_splits", type=int, default=10)
+  parser.add_argument("--C", type=float, default=0.01)
+  parser.add_argument("--n_splits", type=int, default=9)
   args = parser.parse_args()
   
   # create dataframes
@@ -46,6 +46,7 @@ def main():
   kf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
   rc = Remove_correlateds(threshold=args.threshold)
   x = rc.fit(gm_data)
+  print(x.shape)
   gm_cols = list(x.columns)
   x = np.array(x)
   y = condition
