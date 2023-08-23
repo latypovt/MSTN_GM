@@ -25,10 +25,16 @@ Abigail Wolfensohn, Timur Latypov, [Hodaie Lab](https://www.hodaielab.com/)
 ***
 ## 📅 TO DO - this week
 
-1) tSNE - same story - EDSS (need to add EDSS to the demographics dataframe, run data preprocessing and do tsne vis.) - EDSS - step, duration of MS, pain/no pain, age, sex ✅
-2) Slides with intro, objectives, methods (description of everything - model, sfs, nested CV, how it works etc.), results, figures, interpretation ✅
-3) Important predictors - a short (1-2 pages) review on all structures, how previous research in chronic pain/MS shown these regions being affected. Check lab papers as well
-4) Start writing documentation in this file - use Markdown (guide: https://www.markdownguide.org/basic-syntax/) ✅
-5) Draft of research proposal
-6) Reading on PyTorch (https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/ and https://blog.paperspace.com/ultimate-guide-to-pytorch/) - pay attention to the dataset and data loading functions, training loop, model construction, evaluation etc. 
-7) Reading and tutorials: MONAI (https://github.com/Project-MONAI/tutorials and https://docs.monai.io/en/stable/) - look at the 3d_classification tutorials.
+1) Writing - introduction, methods, results, discussion
+  
+  Intro should follow key points listed in the file
+  Methods - need a supplemental figure for inclusion of subjects
+    Results - need to add HC subjects to the stats
+    Discussion - follow the listed structure, need to cite structural MRI papers, fMRI papers, ML papers in TN/chronic pain
+    Discussion about MS - open question, need to think
+
+2) Need to add HC subjects to the stats - CamCAN data
+3) Get paper done
+4) Clean up code
+
+Next version - Mid September, planning virtual meeting.
