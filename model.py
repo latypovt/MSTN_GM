@@ -19,20 +19,24 @@ def main():
   parser.add_argument("--k_features", type=str, default="parsimonious")
   parser.add_argument("--path_to_data", type=str, default="stats/ml_dataframe.csv")
   parser.add_argument("--kernel", type=str, default="linear")
-  parser.add_argument("--C", type=float, default=0.1)
-  parser.add_argument("--n_splits", type=int, default=10)
+  parser.add_argument("--C", type=float, default=0.01)
+  parser.add_argument("--n_splits", type=int, default=9)
   args = parser.parse_args()
   
   # create dataframes
   ml_dataframe = pd.read_csv(args.path_to_data)
   ml_dataframe = ml_dataframe.drop(columns=['id', 'eTIV'])
   ml_dataframe['diagnosis'] = [1 if dx =="MS-TN" else 0 for dx in ml_dataframe['diagnosis']]
+  print(ml_dataframe.shape)
+  # drop subjects with missing data
+  ml_dataframe = ml_dataframe.dropna(axis=0)
+  print(ml_dataframe.shape)
 
   # set condition
   condition = list(ml_dataframe["diagnosis"])
   condition = np.array(condition)
 
-  # drop unnecessary columns
+  # drop unnecessary columns, prepare data for stratification
   gm_data = ml_dataframe.drop(columns=['age', 'sex', 'diagnosis', 'duration_of_ms', 'duration_of_pain', 'side_of_pain', 'edss'])
   gm_data = gm_data[np.random.default_rng(seed=42).permutation(gm_data.columns.values)]
 
@@ -42,6 +46,7 @@ def main():
   kf = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
   rc = Remove_correlateds(threshold=args.threshold)
   x = rc.fit(gm_data)
+  print(x.shape)
   gm_cols = list(x.columns)
   x = np.array(x)
   y = condition
