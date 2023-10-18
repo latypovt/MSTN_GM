@@ -10,7 +10,7 @@ from sklearn.preprocessing import LabelBinarizer
 
 def plot_confusion_matrix(conf_matrix, class_names, savefig = 'confusion_matrix.png'):
 
-    plt.figure(figsize=(8,6), dpi=100)
+    plt.figure(figsize=(6,4), dpi=300)
     sns.set(font_scale = 1.1)
 
     ax = sns.heatmap(conf_matrix, annot=True, cmap="Blues")
@@ -31,7 +31,7 @@ def plot_confusion_matrix(conf_matrix, class_names, savefig = 'confusion_matrix.
 
 
 def plot_auc(fpr, tpr, roc_auc, class_names, savefig = 'roc.png'):
-    plt.figure()
+    plt.figure(figsize=(6,4), dpi=300)
     lw = 2
     plt.plot(fpr, tpr, color='darkorange',
              lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
@@ -119,7 +119,7 @@ def plot_roc_auc(y_test, y_proba, class_names, colors, savefig = 'roc.png'):
     tpr["micro"] = mean_tpr
 
     roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(6, 6))
     sns.axes_style("white")
     ax = sns.lineplot(x=[0, 1], y=[0, 1], color='grey', lw=2, linestyle='--', alpha=0.6, zorder = 2)
     ax.set_xlim([-0.02, 1.02])
