@@ -21,7 +21,7 @@ def main():
     # create dataframes
     ml_dataframe = pd.read_csv(args.path_to_data)
     ml_dataframe = ml_dataframe.drop(columns=['eTIV'])
-    ml_dataframe['sex'] = [1 if sex=="f" else 0 for sex in ml_dataframe["sex"]]
+    ml_dataframe['sex'] = ['F' if sex=="f" else 'M' for sex in ml_dataframe["sex"]]
     ml_dataframe['duration_categories'] = ['<5' if duration <5 else '5-10' if duration < 10 else '10-15' if duration <15 else '15-20' if duration<20 else '>20' for duration in ml_dataframe['duration_of_ms']]
     ml_dataframe['edss_categories'] = ['0-1.5' if edss <1.5 else '1.5-3' if edss < 3 else '3-4.5' if edss <4.5 else '4.5-6' if edss<6 else '6-7.5' if edss<=7.5 else 'MS-TN' for edss in ml_dataframe['edss']]
 
@@ -53,7 +53,7 @@ def main():
 
     # create dataframe
     tsne_data = np.vstack((tsne_data.T, ml_dataframe["diagnosis"])).T    
-    tsne_df = pd.DataFrame(data=tsne_data, columns=("Dim_1", "Dim_2", "diagnosis"))
+    tsne_df = pd.DataFrame(data=tsne_data, columns=("TSNE-1", "TSNE-2", "diagnosis"))
     tsne_df["edss_categories"] = ml_dataframe["edss_categories"]
     tsne_df["age"] = ml_dataframe["age"]
     tsne_df["sex"] = ml_dataframe["sex"]
@@ -63,27 +63,39 @@ def main():
     matplotlib.font_manager.findfont('humor sans')
 
     # plot
-    with plt.xkcd():
-      plt.figure(figsize=(10,10))
-      sns.scatterplot(tsne_df, x="Dim_1", y="Dim_2", hue='diagnosis', sizes = 5, alpha=0.8)
-      for i, subject in enumerate (ml_dataframe["id"]):
-          plt.annotate(subject, (tsne_data[i,0]+0.08, tsne_data[i,1]+0.08), fontsize=6)
-      plt.savefig('out/tsne.png', dpi=300)
+    plt.figure(figsize=(8,8))
+    sns.scatterplot(tsne_df, x="TSNE-1", y="TSNE-2", hue='diagnosis', sizes=10, alpha=0.8)
+    plt.legend(loc='upper left', title='Diagnosis', fontsize='medium')
+    plt.tick_params(axis='both', which='major', labelsize=15)
+    plt.xlabel('TSNE-1', fontsize=15)
+    plt.ylabel('TSNE-2', fontsize=15)
+    plt.savefig('out/tsne.png', dpi=400)
 
-    with plt.xkcd():
-      fig, ax = plt.subplots(2, 2, figsize=(15, 15))
+    fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+    fig.subplots_adjust(hspace=0.3, wspace=0.3)
 
-      sns.scatterplot(ax=ax[1, 0], data=tsne_df, x="Dim_1", y="Dim_2", hue='duration_categories', hue_order = ['<5', '5-10', '10-15', '10-15', '15-20', '>20'], sizes=5, alpha=0.8)
-      ax[1, 0].legend(loc='upper right', title='Duration of MS', fontsize='xx-small')
-
-
-      sns.scatterplot(ax=ax[0, 0], data=tsne_df, x="Dim_1", y="Dim_2", hue='diagnosis', sizes=5, alpha=0.8)
-      ax[0, 0].legend(loc='upper right', title='Diagnosis', fontsize='xx-small')
-      sns.scatterplot(ax=ax[0, 1], data=tsne_df, x="Dim_1", y="Dim_2", hue='scanner', sizes=5, alpha=0.8)
-      ax[0, 1].legend(loc='upper right', title='Scanner', fontsize='xx-small')
-      sns.scatterplot(ax=ax[1, 1], data=tsne_df, x="Dim_1", y="Dim_2", hue='age', sizes=5, alpha=0.8)
-      ax[1, 1].legend(loc='upper right', title='Age', fontsize='xx-small')
-      plt.savefig('out/tsne_subplots.png', dpi=300)
+    sns.scatterplot(ax=ax[1, 0], data=tsne_df, x="TSNE-1", y="TSNE-2", hue='duration_categories', hue_order = ['<5', '5-10', '10-15', '10-15', '15-20', '>20'], sizes=5, alpha=0.8)
+    ax[1, 0].legend(loc='upper left', title='Sex', fontsize='small')
+    ax[1, 0].tick_params(axis='both', which='major', labelsize=15)
+    # change size of axis subtitles TSNE-1 and TSNE-2
+    ax[1, 0].set_xlabel('TSNE-1', fontsize=15)
+    ax[1, 0].set_ylabel('TSNE-2', fontsize=15)
+    sns.scatterplot(ax=ax[0, 0], data=tsne_df, x="TSNE-1", y="TSNE-2", hue='sex', palette=['#4FB6D5', '#EC5C71'], sizes=5, alpha=0.8)
+    ax[0, 0].legend(loc='upper left', title='Diagnosis', fontsize='small')
+    ax[0, 0].tick_params(axis='both', which='major', labelsize=15)
+    ax[0, 0].set_xlabel('TSNE-1', fontsize=15)
+    ax[0, 0].set_ylabel('TSNE-2', fontsize=15)
+    sns.scatterplot(ax=ax[0, 1], data=tsne_df, x="TSNE-1", y="TSNE-2", hue='scanner', sizes=5, alpha=0.8)
+    ax[0, 1].legend(loc='upper left', title='Scanner', fontsize='small')
+    ax[0, 1].tick_params(axis='both', which='major', labelsize=15)
+    ax[0, 1].set_xlabel('TSNE-1', fontsize=15)
+    ax[0, 1].set_ylabel('TSNE-2', fontsize=15)
+    sns.scatterplot(ax=ax[1, 1], data=tsne_df, x="TSNE-1", y="TSNE-2", hue='age', sizes=5, alpha=0.8)
+    ax[1, 1].legend(loc='upper left', title='Age', fontsize='small')
+    ax[1, 1].tick_params(axis='both', which='major', labelsize=15)
+    ax[1, 1].set_xlabel('TSNE-1', fontsize=15)
+    ax[1, 1].set_ylabel('TSNE-2', fontsize=15)
+    plt.savefig('out/tsne_subplots.png', dpi=400)
 
 
  
