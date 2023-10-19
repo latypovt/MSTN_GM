@@ -297,6 +297,7 @@
 "lh_LGN": "L LGN V",
 "lh_MV(Re)": "L MVRe V",
 "lh_AV": "L AV V",
+"rh_AV": "R AV V",
 "lh_VA": "L VA V",
 "lh_VAmc": "L VAmc V",
 "lh_VLa": "L VLa V",
@@ -332,8 +333,11 @@
 "lh_VLp": "L VLp V",
 "rh_VLp": "R VLp V",
 "rh_PuA": "R PuA V",
+"lh_PuA": "L PuA V",
 "lh_PuM": "L PuM V",
 "rh_PuM": "R PuM V",
+"lh_Pt": "L Pt V",
+"rh_Pt": "R Pt V",
 "lh_hippocampal-fissure": "L HP Fiss V",
 "rh_hippocampal-fissure": "R HP Fiss V",
 "lh_Medial-nucleus": "L MedN V",
@@ -345,5 +349,6 @@
 "lh_Hippocampal_tail": "L HP Tail V",
 "lh_Whole_hippocampus": "L Whole Hipp V",
 "rh_Whole_hippocampus": "R Whole Hipp V",
-"lh_Corticoamygdaloid-transitio": "L Cor AmT V"
+"lh_Corticoamygdaloid-transitio": "L Cor AmT V",
+"rh_Hippocampal_tail": "R HP Tail V"
 }

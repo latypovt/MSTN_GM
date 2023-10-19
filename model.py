@@ -20,7 +20,7 @@ def main():
   parser.add_argument("--path_to_data", type=str, default="stats/ml_dataframe.csv")
   parser.add_argument("--kernel", type=str, default="linear")
   parser.add_argument("--C", type=float, default=0.01)
-  parser.add_argument("--n_splits", type=int, default=9)
+  parser.add_argument("--n_splits", type=int, default=10)
   args = parser.parse_args()
   
   # create dataframes
@@ -63,7 +63,7 @@ def main():
   for fold, (nest_index, test_index) in progress_bar:
     x_nest, x_test = x[nest_index], x[test_index]
     y_nest, y_test = y[nest_index], y[test_index]
-    kf2 = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
+    kf2 = StratifiedKFold(n_splits=args.n_splits-1, shuffle=True, random_state=42)
     split = kf2.split(x_nest, y_nest)
     model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
     featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=20, verbose=0)
