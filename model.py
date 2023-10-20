@@ -43,7 +43,7 @@ def main():
 
   # stratify
   
-  kf = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=42)
+  kf = StratifiedKFold(n_splits=args.n_splits, shuffle=True, random_state=20)
   rc = Remove_correlateds(threshold=args.threshold)
   x = rc.fit(gm_data)
   print(x.shape)
@@ -63,7 +63,7 @@ def main():
   for fold, (nest_index, test_index) in progress_bar:
     x_nest, x_test = x[nest_index], x[test_index]
     y_nest, y_test = y[nest_index], y[test_index]
-    kf2 = StratifiedKFold(n_splits=args.n_splits-1, shuffle=True, random_state=42)
+    kf2 = StratifiedKFold(n_splits=args.n_splits-1, shuffle=True, random_state=20)
     split = kf2.split(x_nest, y_nest)
     model = Pipeline([("scaler", StandardScaler()), ("svm", SVC(kernel=args.kernel, C=args.C, probability=True))])
     featureselector = SFS(model, k_features=args.k_features, forward=False, floating=False, scoring="accuracy", cv=list(split), n_jobs=20, verbose=0)
