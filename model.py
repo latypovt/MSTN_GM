@@ -95,7 +95,7 @@ def main():
         model_pred = np.append(model_pred, y_pred_test, axis=0)
 
     #progress bar
-    progress_bar.set_postfix({'Train': np.mean(train_acc), 'Test': np.mean(test_acc)})
+    progress_bar.set_postfix({'Train mean': np.mean(train_acc), 'sd':np.std(train_acc), 'Test mean': np.mean(test_acc), 'sd':np.std(test_acc)})
 
     # save fold_features as csv
     feature_weights = pd.DataFrame(model_feature_weights, columns=fold_features)
