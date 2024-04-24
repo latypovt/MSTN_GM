@@ -18,23 +18,11 @@ Abigail Wolfensohn, Timur Latypov, [Hodaie Lab](https://www.hodaielab.com/)
 
 ***
 ## 📌 Latest results:
-    Mean train accuracy 99.6%  
-    Mean test accuracy 90.2%
+    Mean train accuracy 99.5%  
+    Mean test accuracy 93.4%
 ![feature_weights](https://github.com/latypovt/MSTN_GM/assets/119353990/0a690b00-9fd6-4321-838a-afceffabd4bd.png)
 
 ***
-## 📅 TO DO - this week
+## 📅 Timeline
 
-1) Writing - introduction, methods, results, discussion
-  
-  Intro should follow key points listed in the file
-  Methods - need a supplemental figure for inclusion of subjects
-    Results - need to add HC subjects to the stats
-    Discussion - follow the listed structure, need to cite structural MRI papers, fMRI papers, ML papers in TN/chronic pain
-    Discussion about MS - open question, need to think
-
-2) Need to add HC subjects to the stats - CamCAN data
-3) Get paper done
-4) Clean up code
-
-Next version - Mid September, planning virtual meeting.
+Manuscript is in preparation.
