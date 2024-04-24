@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from mlxtend.feature_selection import SequentialFeatureSelector as SFS
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 import argparse
@@ -83,19 +83,22 @@ def main():
     acc_test = accuracy_score(y_test, y_pred_test)
     test_acc.append(acc_test)
     train_acc.append(acc_train)
-   
+    
    # confusion matrix
     if model_proba is None:
         model_proba = final_model.predict_proba(x_test)
         y_true = y_test
         model_pred = y_pred_test
+        roc_auc = roc_auc_score(y_true, model_proba[:, 1])
     else:
         model_proba = np.append(model_proba, final_model.predict_proba(x_test), axis=0)
         y_true = np.append(y_true, y_test, axis=0)
         model_pred = np.append(model_pred, y_pred_test, axis=0)
+        roc_auc = np.append(roc_auc, roc_auc_score(y_true, model_proba[:, 1]))
+
 
     #progress bar
-    progress_bar.set_postfix({'Train mean': np.mean(train_acc), 'sd':np.std(train_acc), 'Test mean': np.mean(test_acc), 'sd':np.std(test_acc)})
+    progress_bar.set_postfix({'Train mean': np.mean(train_acc), 'std':np.std(train_acc), 'Test mean': np.mean(test_acc), 'sd':np.std(test_acc), 'roc_auc': np.std(roc_auc)})
 
     # save fold_features as csv
     feature_weights = pd.DataFrame(model_feature_weights, columns=fold_features)
