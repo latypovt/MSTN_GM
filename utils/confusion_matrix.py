@@ -31,6 +31,7 @@ def plot_confusion_matrix(conf_matrix, class_names, savefig = 'confusion_matrix.
 
 
 def plot_auc(fpr, tpr, roc_auc, class_names, savefig = 'roc.png'):
+    sns.set_style("whitegrid")
     plt.figure(figsize=(6,4), dpi=300)
     lw = 2
     plt.plot(fpr, tpr, color='darkorange',
