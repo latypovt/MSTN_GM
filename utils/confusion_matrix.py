@@ -1,4 +1,5 @@
 import seaborn as sns
+import seaborn.objects as so
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -118,28 +119,35 @@ def plot_roc_auc(y_test, y_proba, class_names, colors, savefig = 'roc.png'):
 
     fpr["micro"] = fpr_grid
     tpr["micro"] = mean_tpr
-
-    roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
-    fig, ax = plt.subplots(figsize=(6, 6))
-    sns.axes_style("white")
-    ax = sns.lineplot(x=[0, 1], y=[0, 1], color='grey', lw=2, linestyle='--', alpha=0.6, zorder = 2)
-    ax.set_xlim([-0.02, 1.02])
-    ax.set_ylim([-0.02, 1.02])
-    ax.set_xlabel('False Positive Rate')
-    ax.set_ylabel('True Positive Rate')
-    ax.set_title('Receiver operating characteristic')
-    #add 0 to the beginning of the micro arrays to make the plot start at (0,0)
     fpr['micro'] = np.insert(fpr['micro'], 0, 0)
     tpr['micro'] = np.insert(tpr['micro'], 0, 0)
 
-           
+    roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+    
+    random_df = pd.DataFrame({'fpr': [0, 1], 'tpr': [0, 1]})
+    df = pd.DataFrame({'fpr': fpr['micro'], 'tpr': tpr['micro']})
+    df.to_csv('out/roc_auc.csv')
 
-    ax = sns.lineplot(x=fpr["micro"], y=tpr["micro"], label='Average ROC curve (area = {0:0.2f})'
-                    ''.format(roc_auc["micro"]), color='navy', linestyle='-', linewidth=2, alpha=0.7, zorder = 1)
-    #make sure the plot goes from (0,0) to (1,1)
+    p = so.Plot(
+        data=df, x='fpr', y='tpr'
+    ).add(
+        so.Line(color='navy', linewidth=2, linestyle='-', alpha=0.6), label='Average ROC curve (area = {0:0.2f})'.format(roc_auc["micro"])
+    ).add(
+        so.Line(color='grey', linewidth=2, linestyle='--', alpha=0.6,), data = random_df, x = 'fpr', y = 'tpr'
+    ).theme(
+        sns.axes_style("whitegrid")
+    ).label(
+        x='False Positive Rate', y='True Positive Rate', title='Receiver operating characteristic'
+    ).layout(
+        size=(6,6), engine='tight'
+    )
+
+    f = plt.figure(figsize=(6,6))
+    plotter = p.layout(engine='tight').theme(sns.axes_style("whitegrid")).on(f).plot()
+    plotter._figure.legends[0].set_bbox_to_anchor((0.4, 0.15))
 
     if savefig:
-        plt.savefig(savefig, dpi=300, bbox_inches='tight')
+        plotter.save(savefig, bbox_inches='tight', dpi=400, transparent=False)
 
 
 
