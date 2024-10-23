@@ -17,7 +17,7 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument("--threshold", type=float, default=0.9)
   parser.add_argument("--k_features", type=str, default="parsimonious")
-  parser.add_argument("--path_to_data", type=str, default="stats/ml_dataframe.csv")
+  parser.add_argument("--path_to_data", type=str, default="/home/timlatypov/PhD/ModelZoo/MSTN_DATA/ml_dataframe.csv")
   parser.add_argument("--kernel", type=str, default="linear")
   parser.add_argument("--C", type=float, default=0.01)
   parser.add_argument("--n_splits", type=int, default=10)
@@ -56,6 +56,7 @@ def main():
   model_proba = None
   y_true = None
   model_pred = None
+  fold_number = None
 
 
   # test
@@ -91,11 +92,13 @@ def main():
         y_true = y_test
         model_pred = y_pred_test
         roc_auc = roc_auc_score(y_true, model_proba[:, 1])
+        fold_number = np.repeat(fold, len(y_test))
     else:
         model_proba = np.append(model_proba, final_model.predict_proba(x_test), axis=0)
         y_true = np.append(y_true, y_test, axis=0)
         model_pred = np.append(model_pred, y_pred_test, axis=0)
         roc_auc = np.append(roc_auc, roc_auc_score(y_true, model_proba[:, 1]))
+        fold_number = np.append(fold_number, np.repeat(fold, len(y_test)), axis=0)
 
 
     #progress bar
@@ -116,10 +119,15 @@ def main():
   feature_set = feature_set.to_frame()
   feature_set.to_csv('out/important_features.csv')
 
+  prediction = pd.DataFrame({'y_true': y_true, 'y_pred': model_pred, 'fold': fold_number})
+  prediction.to_csv('out/predictions_plotting.csv')
+  y_proba = pd.DataFrame(model_proba, columns=['MS', 'MS-TN'])
+  y_proba.to_csv('out/y_proba.csv')
+
   # save model probe
-  cm = plot_cm.confusion_matrix(y_true, model_pred, normalize='true')
-  plot_cm.plot_confusion_matrix(cm, class_names=['MS', 'MS-TN'], savefig='out/cm.png')
-  plot_cm.plot_roc_auc(y_true, model_proba, class_names=['MS', 'MS-TN'], colors=['#B1C8E7', '#E6BA97'], savefig='out/roc.png')
+  #cm = plot_cm.confusion_matrix(y_true, model_pred, normalize='true')
+  #plot_cm.plot_confusion_matrix(cm, class_names=['MS', 'MS-TN'], savefig='out/cm.png')
+  #plot_cm.plot_roc_auc(y_true, model_proba, class_names=['MS', 'MS-TN'], colors=['#B1C8E7', '#E6BA97'], savefig='out/roc.png')
 
 if __name__ == "__main__":
   main()  

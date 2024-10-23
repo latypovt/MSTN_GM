@@ -97,6 +97,34 @@ def get_all_roc_coordinates(y_real, y_proba):
     return tpr_list, fpr_list
 
 
+def compute_microaverage(y_real, y_proba):
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+
+
+    fpr['macro'], tpr['macro'], _ = roc_curve(y_real, y_proba[:,1], drop_intermediate=False)
+    roc_auc['macro'] = auc(fpr['macro'], tpr['macro'])
+    
+    # compute micro-average ROC curve and ROC area
+    
+    fpr_grid = np.linspace(0.0, 1.0, 1000)
+    mean_tpr = np.zeros_like(fpr_grid)
+    mean_tpr += np.interp(fpr_grid, fpr['macro'], tpr['macro'])
+
+
+    fpr["micro"] = fpr_grid
+    tpr["micro"] = mean_tpr
+    fpr['micro'] = np.insert(fpr['micro'], 0, 0)
+    tpr['micro'] = np.insert(tpr['micro'], 0, 0)
+
+    roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+    
+    random_df = pd.DataFrame({'fpr': [0, 1], 'tpr': [0, 1]})
+    df = pd.DataFrame({'fpr': fpr['micro'], 'tpr': tpr['micro']})
+    return df
+
+
 
 
 # create a function to calculate the AUC for one-vs-rest classification and plot it using seaborn
