@@ -1,7 +1,5 @@
-# 🧠 MSTN_GM 
-
-*Summer project - University of Toronto, [IMS SURP](https://ims.utoronto.ca/surp)*  
-Abigail Wolfensohn, Timur Latypov, [Hodaie Lab](https://www.hodaielab.com/)
+# 🧠 Signatures of chronic pain in multiple sclerosis: a machine learning approach to investigate trigeminal neuralgia 
+Scripts and code used for the analysis
   
 ***Primary objective:** Using Freesurfer parcellation to predict TN pain in MS subjects*  
 
@@ -18,11 +16,7 @@ Abigail Wolfensohn, Timur Latypov, [Hodaie Lab](https://www.hodaielab.com/)
 
 ***
 ## 📌 Latest results:
-    Mean train accuracy 99.5%  
-    Mean test accuracy 93.4%
-![feature_weights](https://github.com/latypovt/MSTN_GM/assets/119353990/0a690b00-9fd6-4321-838a-afceffabd4bd.png)
+Please check our [manuscript](https://journals.lww.com/pain/fulltext/9900/signatures_of_chronic_pain_in_multiple_sclerosis_.789.aspx) published in PAIN 
 
-***
-## 📅 Timeline
+Latypov TH, Wolfensohn A, Yakubov R, et al. Signatures of chronic pain in multiple sclerosis: a machine learning approach to investigate trigeminal neuralgia. Pain. Published online December 13, 2024. doi:10.1097/j.pain.0000000000003497
 
-Manuscript is in preparation.
